@@ -158,7 +158,7 @@ trait Operator {
 impl Operator for TokenKind {
     fn prefix_binding_power(&self) -> ((), u8) {
         match self {
-            TokenKind::Plus | TokenKind::Minus | TokenKind::Bang => ((), 51),
+            TokenKind::Minus | TokenKind::Bang => ((), 51),
             // Prefixes are the only operators we have already seen
             // when we call this, so we know the token must be
             // one of the above

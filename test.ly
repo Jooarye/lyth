@@ -1,7 +1,8 @@
-fn test(abc: i32) bool {
-  return 12;
+fn test(abc: i64) i64 {
+  let x: i64 = 5;
+  return x * 7 + abc;
 }
 
-fn main() i32 {
-  return 0;
+fn test2() i64 {
+  return 1 * test(777);
 }

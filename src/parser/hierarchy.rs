@@ -122,7 +122,7 @@ impl<'a> Parser<'a> {
                 self.consume(TokenKind::ClosedBrace);
                 ast::Decl::Struct { name, members }
             }
-            kind => panic!("{}: unknown start of declaration", self.last),
+            _ => panic!("{}: unknown start of declaration", self.last),
         }
     }
 

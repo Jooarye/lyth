@@ -74,7 +74,7 @@ pub enum Expr {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Lit {
-    Integer(usize),
+    Integer(u64),
     String(String),
     Boolean(bool),
 }
