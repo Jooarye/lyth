@@ -1,7 +1,9 @@
 use super::Location;
 
-#[derive(Debug, Hash, Copy, Clone)]
+#[derive(Debug, Hash, PartialEq, Copy, Clone)]
 pub enum TokenKind {
+  Eof,
+
   // Literals
   Identifier,
   String,
@@ -43,6 +45,8 @@ pub enum TokenKind {
   Struct,
   Function,
   Let,
+  If,
+  Else,
   For,
   Loop,
   Break,

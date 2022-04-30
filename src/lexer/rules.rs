@@ -93,6 +93,14 @@ pub fn get_rules() -> Vec<Rule> {
       matches: |input| match_word(input, "let"),
     },
     Rule {
+      kind: TokenKind::If,
+      matches: |input| match_word(input, "if"),
+    },
+    Rule {
+      kind: TokenKind::Else,
+      matches: |input| match_word(input, "else"),
+    },
+    Rule {
       kind: TokenKind::For,
       matches: |input| match_word(input, "for"),
     },

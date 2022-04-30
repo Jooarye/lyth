@@ -7,9 +7,9 @@ use token::*;
 
 #[derive(Clone)]
 pub struct Location<'a> {
-  file: &'a str,
-  line: usize,
-  col: usize,
+  pub file: &'a str,
+  pub line: usize,
+  pub col: usize,
 }
 
 impl<'a> Display for Location<'a> {
