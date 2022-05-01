@@ -21,6 +21,15 @@ pub struct Type {
     pub generics: Vec<Type>,
 }
 
+impl Type {
+    pub fn new_simple(name: &str) -> Self {
+        Self {
+            name: String::from(name),
+            generics: Vec::new(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Stmt {
     Let {
@@ -74,7 +83,7 @@ pub enum Expr {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Lit {
-    Integer(u64),
+    Integer(usize),
     String(String),
     Boolean(bool),
 }

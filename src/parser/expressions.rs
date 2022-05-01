@@ -35,10 +35,8 @@ impl<'a> Parser<'a> {
                 ast::Expr::Literal(lit)
             }
             TokenKind::Identifier => {
-                let name = {
-                    let ident_token = self.next().unwrap();
-                    self.text(ident_token).to_string()
-                };
+                let ident_token = self.next().unwrap();
+                let name = self.text(ident_token).to_string();
 
                 if !self.at(TokenKind::OpenParen) {
                     // plain identifier
@@ -85,6 +83,7 @@ impl<'a> Parser<'a> {
                 | op @ TokenKind::Minus
                 | op @ TokenKind::Asterisk
                 | op @ TokenKind::Slash
+                | op @ TokenKind::Percent
                 | op @ TokenKind::Caret
                 | op @ TokenKind::Equal
                 | op @ TokenKind::UnEqual

@@ -12,6 +12,7 @@ pub struct Compiler<'a> {
     module: LLVMModuleRef,
     builder: LLVMBuilderRef,
     function: Option<LLVMValueRef>,
+    function_type: Option<ast::Type>,
     named_values: HashMap<String, LLVMValueRef>,
 }
 
@@ -33,6 +34,7 @@ impl<'a> Compiler<'a> {
             module: unsafe { core::LLVMModuleCreateWithName(mod_name.as_ptr()) },
             builder: unsafe { core::LLVMCreateBuilder() },
             function: None,
+            function_type: None,
             named_values: HashMap::new(),
         }
     }
@@ -73,6 +75,7 @@ impl<'a> Compiler<'a> {
                     self.function = Some(unsafe {
                         core::LLVMAddFunction(self.module, function_name.as_ptr(), function_type)
                     });
+                    self.function_type = rtyp.clone();
 
                     let block_name = CStr::from_bytes_with_nul(b"entry\0").unwrap();
                     let entry_block = unsafe {
@@ -100,6 +103,9 @@ impl<'a> Compiler<'a> {
                     }
 
                     self.compile_stmt(body);
+
+                    self.function = None;
+                    self.function_type = None;
                 }
                 _ => panic!("not implemented"),
             }
@@ -166,6 +172,7 @@ impl<'a> Compiler<'a> {
                 let cons_block = unsafe {
                     core::LLVMAppendBasicBlock(self.function.unwrap(), cons_name.as_ptr())
                 };
+
                 let alter_name = CStr::from_bytes_with_nul(b"alter\0").unwrap();
                 let alter_block = unsafe {
                     core::LLVMAppendBasicBlock(self.function.unwrap(), alter_name.as_ptr())
@@ -183,16 +190,22 @@ impl<'a> Compiler<'a> {
 
                 self.compile_stmt(body);
 
+                unsafe { core::LLVMBuildBr(self.builder, merge_block) };
+
+                unsafe { core::LLVMPositionBuilderAtEnd(self.builder, alter_block) };
                 if elze.is_some() {
                     let elze = elze.clone().unwrap();
-
-                    unsafe { core::LLVMPositionBuilderAtEnd(self.builder, alter_block) };
                     self.compile_stmt(elze.as_ref());
-
-                    unsafe { core::LLVMBuildBr(self.builder, merge_block) };
                 }
-
                 unsafe { core::LLVMBuildBr(self.builder, merge_block) };
+
+                unsafe { core::LLVMPositionBuilderAtEnd(self.builder, merge_block) };
+            }
+            ast::Stmt::Assign { name, op: _, value } => {
+                let ptr = self.named_values[name];
+                let val = self.compile_expr(value);
+
+                unsafe { core::LLVMBuildStore(self.builder, val, ptr) };
             }
             ast::Stmt::Return { value } => match value {
                 Some(val) => {
@@ -210,7 +223,9 @@ impl<'a> Compiler<'a> {
     fn compile_expr(&mut self, expr: &Box<ast::Expr>) -> LLVMValueRef {
         match expr.as_ref() {
             ast::Expr::Literal(l) => match l {
-                ast::Lit::Integer(i) => unsafe { core::LLVMConstInt(core::LLVMInt64Type(), *i, 0) },
+                ast::Lit::Integer(i) => unsafe {
+                    core::LLVMConstInt(core::LLVMInt64Type(), *i as u64, 0)
+                },
                 ast::Lit::Boolean(b) => unsafe {
                     core::LLVMConstInt(core::LLVMInt1Type(), if *b { 1 } else { 0 }, 0)
                 },

@@ -5,7 +5,7 @@ use rules::{get_rules, Rule};
 use std::fmt::{Display, Formatter, Result};
 use token::*;
 
-#[derive(Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Location<'a> {
     pub file: &'a str,
     pub line: usize,

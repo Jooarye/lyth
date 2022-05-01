@@ -145,7 +145,8 @@ impl<'a> Parser<'a> {
         let mut generics = Vec::new();
 
         if self.at(TokenKind::LessThan) {
-            self.consume(TokenKind::LessThan);
+            panic!("generics aren't supported yet");
+            /*self.consume(TokenKind::LessThan);
 
             while !self.at(TokenKind::GreaterThan) {
                 let generic = self.type_();
@@ -155,7 +156,7 @@ impl<'a> Parser<'a> {
                     self.consume(TokenKind::Comma);
                 }
             }
-            self.consume(TokenKind::GreaterThan);
+            self.consume(TokenKind::GreaterThan); */
         }
 
         ast::Type { name, generics }
